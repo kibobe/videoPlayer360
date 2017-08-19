@@ -45,9 +45,14 @@ public:
     Player();
 
     // Initialize all SDL subsystems
-    // and Open video file
-    bool init(const char * video, int & videoStream, double &fpsMicro);
+    bool init();
     
+    // openFile
+    bool openFile(const char * video);
+
+    // initialize Codec
+    bool initCodec(int & videoStream, double & fpsMicro);
+
     // Creating a Display -- method
     // SDL_SetVideoMode set up a screen with the given width and height
     bool SDLSetUpScreen();

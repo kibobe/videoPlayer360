@@ -22,37 +22,44 @@ Player::Player()
     m_playQuit = false;
 }
 
-bool Player::init(const char * video, int & videoStream, double & fpsMicro)
+bool Player::init()
 {
     av_register_all();
 
     //Initialize all SDL subsystems
-    cout << "initialize SDL!" << endl;
     if( SDL_Init( SDL_INIT_EVERYTHING ) == -1 )
     {
         cout << "Could not initialize SDL!" << endl;
-        return -1;
+        return  false;
     }
-    cout << "initialize SDL!" << endl;
 
+    return true;
+}
+
+bool Player::openFile(const char * video)
+{
     // Open video file
-    cout << "Open file!" << endl;
     if (avformat_open_input(&m_formatCtx, video, NULL, NULL) != 0)
     {
         cout << "Could not open file!" << endl;
-        return -1;
+        return false;
     }
 
     // Retrieve stream information
     if (avformat_find_stream_info(m_formatCtx, NULL) <0)
     {
         cout << "Could not find stream information!" << endl;
-        return -1;
+        return false;
     }
 
     // Dump information about file 
     cout << "Dump infotmation about file: " << endl;
     av_dump_format(m_formatCtx, 0, video, 0);
+
+    return true;
+}
+
+bool Player::initCodec(int & videoStream, double & fpsMicro){
 
     videoStream = -1;
     for (unsigned i = 0; i < m_formatCtx->nb_streams; i++)
@@ -67,7 +74,7 @@ bool Player::init(const char * video, int & videoStream, double & fpsMicro)
     if (videoStream == -1)
     {
         cout << "Didn't find a video stream!" << endl;
-        return -1;
+        return false;
     }
 
     fpsMicro = (av_q2d (m_formatCtx->streams[videoStream]->r_frame_rate)) * MICRO;
@@ -83,7 +90,7 @@ bool Player::init(const char * video, int & videoStream, double & fpsMicro)
     {
         // Codec not found
         cout << "Unsupported codec!" << endl;
-        return -1;
+        return false;
     }
 
     // Copy context
@@ -91,14 +98,14 @@ bool Player::init(const char * video, int & videoStream, double & fpsMicro)
     if (avcodec_copy_context(m_codecCtx, m_codecCtxOrig) != 0)
     {
         cout << "Could not copy codec context!" << endl;
-        return -1;
+        return false;
     }
 
     // Open codec
     if (avcodec_open2(m_codecCtx, m_codec, NULL) < 0)
     {
         cout << "Could not open codec!" << endl;
-        return -1;
+        return false;
     }
 
     return true;
@@ -133,7 +140,6 @@ bool Player::allocateVideoFrame()
 
     numBytes = avpicture_get_size(AV_PIX_FMT_RGB24, m_codecCtx->width, m_codecCtx->height);
     buffer = (uint8_t *)av_malloc(numBytes*sizeof(uint8_t));
-    cout << "Avpicture fill" << endl;
     avpicture_fill((AVPicture *)m_frameRGB, buffer, AV_PIX_FMT_BGR24, m_codecCtx->width, m_codecCtx->height);
 
     //av_image_get_buffer_size used because avpicture_get_size is deprecated

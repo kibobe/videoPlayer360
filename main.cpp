@@ -80,12 +80,27 @@ int main( int argc, char* args[])
     }
     const char* video = args[1];
 
-    //Initialize all SDL subsystems and open video file
-    if (player->init(video, streamVdieo, fpsMicro) == false)
+    //Initialize all SDL subsystems
+    if (player->init() == false)
     {
         cout << "player init = false" << endl;
         return 1;
     }
+    
+    // and open video file
+    if (player->openFile(video) == false)
+    {
+        cout << "player openFile = false" << endl;
+        return 1;
+    }
+
+    // initialize of Codec
+    if (player->initCodec(streamVdieo, fpsMicro) == false)
+    {
+        cout << "player initCodec = false" << endl;
+        return 1;
+    }
+
 
     // Creating a Display -- method
     // SDL_SetVideoMode set up a screen with the given width and height
