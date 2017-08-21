@@ -3,6 +3,7 @@
 # videoPlayer360
 
 ################################################################
+
 make 
 
 pokretanje: ./videoPlayer argument
@@ -12,6 +13,7 @@ argument - predstavlja video koji se pusta,
 
 
 ###############################################################
+
 Neophodna instalacija:
 
 sudo apt-get install build-essential
