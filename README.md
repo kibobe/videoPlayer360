@@ -5,7 +5,7 @@
 ################################################################
 make 
 
-pokretanje: ./videoPlazer argument
+pokretanje: ./videoPlayer argument
 
 argument - predstavlja video koji se pusta, 
 		   video mozete skinuti sa Youtube-a ili sa https://www.360rize.com/vr/ (pritiskom na Download 4K VR Dragster Sample)
